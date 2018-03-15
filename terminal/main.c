@@ -37,6 +37,7 @@
 #include <terminal/terminal-gdbus.h>
 
 
+TerminalApp     *app;
 
 static void
 colortable_sub (const gchar *bright,
@@ -159,7 +160,6 @@ main (int argc, char **argv)
   gboolean         show_version = FALSE;
   gboolean         show_colors = FALSE;
   gboolean         disable_server = FALSE;
-  TerminalApp     *app;
   const gchar     *startup_id;
   const gchar     *display;
   GError          *error = NULL;

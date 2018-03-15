@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -46,7 +48,7 @@
 
 #define ACCEL_MAP_PATH "xfce4/terminal/accels.scm"
 
-
+extern TerminalApp     *app;
 
 static void               terminal_app_finalize                 (GObject            *object);
 static void               terminal_app_update_accels            (TerminalApp        *app);
@@ -451,6 +453,64 @@ terminal_app_window_destroyed (GtkWidget   *window,
 }
 
 
+//save current session to file
+//void pulse_save_session(TerminalApp *app)
+void pulse_save_session()
+{
+  GSList               *result = NULL;
+  GSList               *lp;
+  gchar               **argv;
+  gint                  argc;
+  gint                  n;
+
+  FILE *f;
+  char fname[256] = {0};
+
+  for (lp = app->windows, n = 0; lp != NULL; lp = lp->next)
+  {
+      /* don't session save dropdown windows */
+      if (TERMINAL_IS_WINDOW_DROPDOWN (lp->data))
+        continue;
+
+      if (n++ != 0)
+        result = g_slist_append (result, g_strdup ("--window"));
+      result = g_slist_concat (result, terminal_window_get_restart_command (lp->data));
+  }
+
+  argc = g_slist_length (result) + 1;
+  argv = g_new (gchar*, argc + 1);
+  for (lp = result, n = 1; n < argc; lp = lp->next, ++n)
+    argv[n] = lp->data;
+  argv[n] = NULL;
+
+  argv[0] = g_strdup (PACKAGE_NAME);
+
+  //saving to file
+  strcpy(fname, getenv("HOME"));
+  strcat(fname, "/");
+  strcat(fname, ".xfcetermsession");
+  f = fopen(fname, "w");
+  if (f)
+  {
+	for(n = 0; n < argc; n++)
+	{
+		fputs(argv[n], f);
+		fputs(" ", f);
+	}
+    fclose(f);
+  }
+
+  g_slist_free (result);
+  g_strfreev (argv);
+}
+
+void pulse_restore_session()
+{
+
+}
+
+
+
 
 static void
 terminal_app_save_yourself (XfceSMClient *client,
@@ -816,6 +876,9 @@ terminal_app_process (TerminalApp  *app,
       terminal_app_open_window (app, attr);
       terminal_window_attr_free (attr);
     }
+
+  //XXX - test code
+  //pulse_save_session(app);
 
   g_slist_free (attrs);
   g_free (sm_client_id);
