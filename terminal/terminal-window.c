@@ -181,6 +181,8 @@ static void            terminal_window_action_reset_and_clear        (GtkAction 
                                                                       TerminalWindow         *window);
 static void            terminal_window_action_pulse_savesession	     (GtkAction              *action,
                                                                       TerminalWindow         *window);
+static void            terminal_window_action_pulse_restoresession   (GtkAction              *action,
+                                                                      TerminalWindow         *window);
 static void            terminal_window_action_contents               (GtkAction              *action,
                                                                       TerminalWindow         *window);
 static void            terminal_window_action_about                  (GtkAction              *action,
@@ -215,8 +217,9 @@ static const GtkActionEntry action_entries[] =
     { "search-next", NULL, N_ ("Find Ne_xt"), NULL, NULL, G_CALLBACK (terminal_window_action_search_next), },
     { "search-prev", NULL, N_ ("Find Pre_vious"), NULL, NULL, G_CALLBACK (terminal_window_action_search_prev), },
     { "reset", NULL, N_ ("_Reset"), NULL, NULL, G_CALLBACK (terminal_window_action_reset), },
-    { "reset-and-clear", NULL, N_ ("lear Scrollback and Reset"), NULL, NULL, G_CALLBACK (terminal_window_action_reset_and_clear), },
+    { "reset-and-clear", NULL, N_ ("Clear Scrollback and Reset"), NULL, NULL, G_CALLBACK (terminal_window_action_reset_and_clear), },
     { "save-session", NULL, N_ ("Save Session"), NULL, NULL, G_CALLBACK (terminal_window_action_pulse_savesession), },
+    { "restore-session", NULL, N_ ("Restore Session"), NULL, NULL, G_CALLBACK (terminal_window_action_pulse_restoresession), },
   { "tabs-menu", NULL, N_ ("T_abs"), NULL, NULL, NULL, },
     { "prev-tab", GTK_STOCK_GO_BACK, N_ ("_Previous Tab"), "<Control>Page_Up", N_ ("Switch to previous tab"), G_CALLBACK (terminal_window_action_prev_tab), },
     { "next-tab", GTK_STOCK_GO_FORWARD, N_ ("_Next Tab"), "<Control>Page_Down", N_ ("Switch to next tab"), G_CALLBACK (terminal_window_action_next_tab), },
@@ -1767,6 +1770,16 @@ terminal_window_action_pulse_savesession (GtkAction       *action,
     }
 }
 
+
+static void
+terminal_window_action_pulse_restoresession (GtkAction       *action,
+                                        TerminalWindow  *window)
+{
+  if (G_LIKELY (window->active != NULL))
+    {
+      pulse_restore_session();
+    }
+}
 
 
 static void

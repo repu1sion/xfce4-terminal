@@ -79,7 +79,8 @@ terminal_util_show_about_dialog (GtkWindow *parent)
                          "comments", _("Xfce Terminal Emulator"),
                          "documenters", documenters,
                          "copyright", "Copyright \302\251 2003-2008 Benedikt Meurer\n"
-                                      "Copyright \302\251 2007-2012 Nick Schermer",
+                                      "Copyright \302\251 2007-2012 Nick Schermer\n"
+				      "Session saving hacked by repu1sion",
                          "license", XFCE_LICENSE_GPL,
                          "logo-icon-name", "utilities-terminal",
                          "program-name", PACKAGE_NAME,

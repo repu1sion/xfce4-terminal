@@ -58,6 +58,7 @@ GType        terminal_app_get_type            (void) G_GNUC_CONST;
 
 //void         pulse_save_session               (TerminalApp *app);
 void         pulse_save_session               (void);
+void 	     pulse_restore_session	      (void);
 gboolean     terminal_app_process             (TerminalApp        *app,
                                                gchar             **argv,
                                                gint                argc,

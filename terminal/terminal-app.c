@@ -48,6 +48,9 @@
 
 #define ACCEL_MAP_PATH "xfce4/terminal/accels.scm"
 
+#define SESSION_FILENAME ".xfcetermsession"
+#define CMD_SIZE 4096
+
 extern TerminalApp     *app;
 
 static void               terminal_app_finalize                 (GObject            *object);
@@ -488,15 +491,17 @@ void pulse_save_session()
   //saving to file
   strcpy(fname, getenv("HOME"));
   strcat(fname, "/");
-  strcat(fname, ".xfcetermsession");
+  strcat(fname, SESSION_FILENAME);
   f = fopen(fname, "w");
   if (f)
   {
 	for(n = 0; n < argc; n++)
 	{
 		fputs(argv[n], f);
-		fputs(" ", f);
+		fputc(0xA, f);
+		//fputs(" ", f);
 	}
+    //fputs(" &", f);
     fclose(f);
   }
 
@@ -506,7 +511,38 @@ void pulse_save_session()
 
 void pulse_restore_session()
 {
+  int rv;
+  FILE *f;
+  char fname[256] = {0};
+  char cmd[CMD_SIZE] = {0};
+  char* arg[256] = {0};		//max 256 args
+  int i = 0;
 
+  //reading file
+  strcpy(fname, getenv("HOME"));
+  strcat(fname, "/");
+  strcat(fname, SESSION_FILENAME);
+  f = fopen(fname, "r");
+  if (!f)
+    return;
+
+  while(fgets(cmd, CMD_SIZE, f))
+  {
+	if (cmd[strlen(cmd)-1] == 0xa)
+	{
+		cmd[strlen(cmd)-1] = 0x0;
+	}
+    	arg[i] = strdup(cmd);
+        //g_printerr (_("i: %d, arg: %s\n"), i, arg[i]);
+	i++;
+  }
+
+    //g_printerr (_("executing new terminal\n"));
+    //rv = system(cmd);
+    rv = execv("/usr/bin/xfce4-terminal", arg);
+    //g_printerr (_("rv: %d\n"), rv);
+
+  fclose(f);
 }
 
 
